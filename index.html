@@ -1,14 +1,562 @@
-hello world!<br> 
-<a href="https://resume.daugerd.com">Resume</a><br> 
-<a href="https://globalpomodoro.daugerd.com">Global Pomodoro</a><br> 
-<a href="https://randomnumber.daugerd.com">Random Number</a><br> 
-<a href="https://github.com/daugerd">Github account</a><br> 
-<a href="https://dribbble.com/karolisdaugerdas">Dribbble account</a><br> 
-<a href="https://naujienmiestis.com">Naujienmiestis</a><br> 
-<a href="https://jbgalumni.com">JBG Alumni</a><br> 
-<a href="https://jbgfondas.org">JBG Fondas</a><br> 
-<a href="https://buymeacoffee.com/karolisdaugerdas">Buy Me a Coffee!</a><br> 
-<br> 
-best regards<br> 
-karolis daugerdas<br> 
-info@daugerd.com
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bento Grid</title>
+    <style>
+        :root {
+            --bg: #ececec;
+            --card-bg: #fff;
+            --line: #8db8ef;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg);
+            font-family: Arial, Helvetica, sans-serif;
+            margin-bottom: 100px;
+        }
+
+        body {
+            min-height: 100vh;
+        }
+
+        .canvas {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            padding: 100px;
+            background: var(--bg);
+        }
+
+        .grid {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: repeat(6, minmax(0, 1fr));
+            grid-template-rows: 1.15fr 1.15fr 0.8fr;
+            gap: 24px 22px;
+        }
+
+        .card {
+            border-radius: 24px;
+            background: var(--card-bg);
+            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;
+           
+        }
+
+        .card--a,
+        .card--b,
+        .card--c,
+        .card--d,
+        .card--e,
+        .card--f {
+            min-height: 180px;
+            
+        }
+
+        .card--a {
+            grid-column: 1 / span 4;
+            height: 250px;
+            background-color: #ffffff;
+            padding: 18px 18px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            overflow: hidden;
+            color: #606060;
+            text-align: center;
+        }
+
+        .greeting-wrap {
+            height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .greeting {
+            font-size: clamp(2rem, 3vw, 4rem);
+            font-weight: 700;
+            letter-spacing: -0.06em;
+            line-height: 1;
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(18px) scale(0.96);
+            transition: opacity 0.45s ease, transform 0.45s ease;
+            color: #2f5bb5;
+        }
+
+        .greeting.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .card--a p {
+            margin: 0;
+            font-size: 1.5rem;
+            opacity: 0.9;
+        }
+
+        .polaroid {
+            position: absolute;
+            left: min(2vw, 24px);
+            top: min(2vw, 24px);
+            z-index: 2;
+            width: clamp(140px, 16vw, 220px);
+            background: #fff;
+            border: 1px solid rgba(0,0,0,0.08);
+            box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+            padding: 12px 12px 10px;
+            transform: rotate(-2deg);
+        }
+
+        .polaroid-image {
+            width: 100%;
+            height: 170px;
+            border: 1px solid rgba(0,0,0,0.06);
+            background: linear-gradient(135deg, #dfeafc, #f4f0ef);
+            overflow: hidden;
+        }
+
+        .polaroid-image img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .polaroid-caption {
+            text-align: center;
+            font-size: 12px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #666;
+            margin-top: 10px;
+        }
+
+        .card--b {
+            grid-column: 5 / span 2;
+            background: #f3f7ff;
+            padding: 22px 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 16px;
+            color: #1d1d1d;
+        }
+
+        .contact-label {
+            font-size: 0.7rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #4a5a70;
+            margin: 0;
+        }
+
+        .contact-email {
+            font-size: clamp(1.1rem, 1.5vw, 1.8rem);
+            font-weight: 700;
+            line-height: 1.2;
+            color: #111;
+            text-decoration: none;
+        }
+
+        .contact-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .contact-links a {
+            display: inline-block;
+            padding: 7px 10px;
+            border-radius: 999px;
+            border: 1px solid rgba(17, 17, 17, 0.12);
+            color: #111;
+            text-decoration: none;
+            font-size: 0.72rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .card--cd {
+            grid-column: 1 / span 2;
+        }
+
+        .card--ef {
+            grid-column: 3 / span 2;
+        }
+
+        .card--g {
+            grid-column: 5 / span 2;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .card--g img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .card--cd {
+            display: grid;
+            grid-template-rows: 1.7fr 0.3fr;
+            grid-template-columns: auto;
+            gap: 22px;
+        }
+
+        .card--ef {
+            display: grid;
+            grid-template-rows: 1fr 1fr;
+            grid-template-columns: auto;
+            gap: 22px;
+        }
+
+        .mini-card {
+            position: relative;
+            padding: 18px 18px 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: linear-gradient(135deg, rgba(255,255,255,0.96), rgba(244,246,255,0.92));
+            border-radius: 24px;
+            overflow: hidden;
+        }
+
+        .mini-card.card--g {
+            display: block;
+        }
+
+        .mini-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            pointer-events: none;
+        }
+
+        .mini-card::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            color: #fff;
+            pointer-events: none;
+        }
+
+        .mini-card.card--c::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            color: #fff;
+            pointer-events: none;
+        }
+
+         .mini-card.card--d::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            color: #fff;
+            pointer-events: none;
+        }
+
+        .mini-card.card--e::before {
+            background-position: center;
+        }
+
+        .mini-card.card--e::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        .mini-card > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .mini-card.card--c::before {
+            background-image: url('citadele_verslo-paskolu-portfelis.gif');
+            background-size: cover;
+        }
+
+        .mini-card.card--d::before {
+            background-image: url('svietimo.gif');
+            background-size: cover;
+            background-position: center;
+        }
+
+
+        .mini-card.card--e::before {
+            background-image: url('Untitled 20.gif');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .mini-card.card--f::before {
+            background-size: cover;
+            background-position: center;
+            opacity: 0.85;
+        }
+
+        .mini-card.card--f::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        .mini-card .pill {
+            align-self: flex-start;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: #eef4ff;
+            color: #2f5bb5;
+            font-size: 0.62rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .quote-block {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 100%;
+            gap: 12px;
+        }
+
+        .quote-mark {
+            font-size: 3rem;
+            line-height: 1;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 700;
+        }
+
+        .quote-text {
+            margin: 0;
+            color: #fff;
+            font-size: clamp(1.15rem, 1.8vw, 1.7rem);
+            line-height: 1.25;
+            letter-spacing: -0.04em;
+            font-weight: 700;
+            max-width: 18ch;
+        }
+
+        .quote-meta {
+            margin: 0;
+            font-size: 0.7rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .mini-card h3 {
+            margin: 14px 0 0;
+            font-size: 1.15rem;
+            line-height: 1.2;
+            color: #fff;
+        }
+
+        .mini-card p {
+            margin: 8px 0 0;
+            color: #fff;
+            font-size: 0.82rem;
+            line-height: 1.5;
+        }
+
+        .portfolio-link {
+            position: relative;
+            z-index: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            align-self: flex-start;
+            margin-top: 14px;
+            padding: 9px 14px;
+            border-radius: 999px;
+            background: #2f5bb5;
+            border: 1px solid #1a3e86;
+            color: #fff;
+            text-decoration: none;
+            font-size: 0.72rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            font-weight: 700;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .portfolio-link:hover {
+            transform: translateY(-1px);
+            background: rgba(0, 0, 0, 0.22);
+            color: #000;
+        }
+
+        .skills-wrap {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 14px;
+        }
+
+        .skill-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 7px 11px;
+            border-radius: 999px;
+            background: #ffffff;
+            border: 1px solid #2f5bb5;
+            color: #2f5bb5;
+            font-size: 0.68rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        @media (max-width: 900px) {
+            .canvas {
+                padding: 16px;
+                height: auto;
+                min-height: 100vh;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto;
+            }
+
+            .card--a {
+                height: 350px;
+            }
+            
+            .card--c,
+            .card--e{
+                min-height: 500px;
+            }
+
+            .card--a,
+            .card--b,
+            .card--cd,
+            .card--ef,
+            .card--g {
+                grid-column: auto;
+                min-height: 180px;
+            }
+
+            .canvas {
+                display: flex;
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="canvas">
+        <div class="grid" aria-label="Bento grid layout">
+            <div class="card card--a">
+                <div class="greeting-wrap">
+                    <div class="greeting" aria-live="polite">Hello!</div>
+                </div>
+                <p>My name is Karolis <br />  and I am a graphic designer with coding skills.</p>
+            </div>
+
+            <script>
+                const greetings = ['Hello!', 'Hola!', 'Bonjour!', 'Ciao!', 'Aloha!', 'Sveiki!'];
+                const greetingEl = document.querySelector('.greeting');
+                let greetingIndex = 0;
+
+                function updateGreeting() {
+                    greetingEl.classList.remove('show');
+                    setTimeout(() => {
+                        greetingIndex = (greetingIndex + 1) % greetings.length;
+                        greetingEl.textContent = greetings[greetingIndex];
+                        greetingEl.classList.add('show');
+                    }, 200);
+                }
+
+                greetingEl.textContent = greetings[0];
+                greetingEl.classList.add('show');
+                setInterval(updateGreeting, 1800);
+            </script>
+            <div class="card card--b">
+                <p class="contact-label">Contact</p>
+                <a class="contact-email" href="mailto:info@daugerd.com">info@daugerd.com</a>
+            </div>
+            <div class="card--cd">
+                <div class="mini-card card card--c">
+                    <span class="pill">SOCIAL MEDIA DESIGN</span>
+                    <div>
+                    </div>
+                    <a class="portfolio-link" href="https://dribbble.com/karolisdaugerdas" target="_blank" rel="noreferrer">View my portfolio on Behance</a>
+                </div>
+                <div class="mini-card card card--d">
+                    <span class="pill">BRANDING</span>
+                    <a class="portfolio-link" href="https://dribbble.com/karolisdaugerdas" target="_blank" rel="noreferrer">View my portfolio on Behance</a>
+
+                </div>
+            </div>
+            <div class="card--ef">
+                <div class="mini-card card card--e">
+                    <span class="pill">INFOGRAPHICS</span>
+                    <div>
+                    <a class="portfolio-link" href="https://dribbble.com/karolisdaugerdas" target="_blank" rel="noreferrer">View my portfolio on Behance</a>
+                    </div>
+                    
+                </div>
+                <div class="mini-card card card--f">
+                    <span class="pill">...AND MUCH MORE</span>
+                    <div class="skills-wrap">
+                        <span class="skill-pill">Social Media & Ad Design</span>
+                        <span class="skill-pill">Infographics & Presentations</span>
+                        <span class="skill-pill">Branding & Logo Design</span>
+                        <span class="skill-pill">Data Visualization</span>
+                        <span class="skill-pill">UI / UX</span>
+                        <span class="skill-pill">Print Design</span>
+                        <span class="skill-pill">Frontend Development</span>
+                        <span class="skill-pill">Motion Design</span>
+                        <span class="skill-pill">Illustration</span>
+                        <span class="skill-pill">Copywriting</span>
+                        <span class="skill-pill">Animation</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card card--g mini-card">
+                <span class="pill">SOME OF MY CLIENTS</span>
+                <img src="clients.png" alt="Client logos" />
+            </div>
+        </div>
+
+        <div class="polaroid" aria-label="Polaroid placeholder">
+            <div class="polaroid-image">
+                <img src="profile.jpeg" alt="Example portrait" />
+            </div>
+            <div class="polaroid-caption"><br /></div>
+        </div>
+    </div>
+</body>
+
+</html>
